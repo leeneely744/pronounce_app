@@ -43,13 +43,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }).toList(),
               onChanged: (int? newValue) {
-                // Handle dropdown value change
+                if (newValue != null) {
+                  setState(() {
+                    selectedLevel = newValue;
+                  });
+                }
               },
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage(level: 2)));
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage(level: selectedLevel)));
               },
               child: const Text("Go to Second Page"),
             ),
