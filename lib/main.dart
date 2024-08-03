@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'second.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -26,34 +28,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Container(
-                height: 200.0,
-                width: 200.0,
-                color: Colors.green,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Container(
-                color: Colors.yellow,
-                height: 200,
-                width: 200,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Container(
-                color: Colors.red,
-                height: 200,
-                width: 200,
-              ),
-            )
-          ],
-        )  
-    );
+      body: Center(child: ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage()));
+        },
+        child: const Text("Go to Second Page"),
+      ),
+    ));
   }
 }
