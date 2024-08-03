@@ -21,16 +21,13 @@ class _SecondPage extends State<SecondPage> {
   bool _hasSpeech = false;
   bool _logEvents = false;
   bool _onDevice = false;
-  final TextEditingController _pauseForController = TextEditingController(text: '3');
-  final TextEditingController _listenForController = TextEditingController(text: '30');
   double level = 0.0;
   double minSoundLevel = 50000;
   double maxSoundLevel = -50000;
   String lastWords = '';
   String lastError = '';
   String lastStatus = '';
-  String _currentLocaleId = '';
-  List<LocaleName> _localeNames = [];
+  String _currentLocaleId = 'ko_KR';  // https://docs.oracle.com/cd/E26924_01/html/E27144/glset.html
 
   @override
   void initState() {
@@ -49,14 +46,6 @@ class _SecondPage extends State<SecondPage> {
         onStatus: statusListener,
         debugLogging: _logEvents,
       );
-      if (hasSpeech) {
-        // Get the list of languages installed on the supporting platform so they
-        // can be displayed in the UI for selection by the user.
-        _localeNames = await speech.locales();
-
-        var systemLocale = await speech.systemLocale();
-        _currentLocaleId = systemLocale?.localeId ?? '';
-      }
       if (!mounted) return;
 
       setState(() {
@@ -86,13 +75,8 @@ class _SecondPage extends State<SecondPage> {
                 InitSpeechWidget(_hasSpeech, initSpeechState),  // SpeechToText 初期化ボタン
                 SpeechControlWidget(_hasSpeech, speech.isListening, startListening, stopListening, cancelListening),
                 SessionOptionsWidget(
-                  _currentLocaleId,
-                  _switchLang,
-                  _localeNames,
                   _logEvents,
                   _switchLogging,
-                  _pauseForController,
-                  _listenForController,
                   _onDevice,
                   _switchOnDevice,
                 ),
@@ -116,8 +100,6 @@ class _SecondPage extends State<SecondPage> {
     _logEvent('start listening');
     lastWords = '';
     lastError = '';
-    final pauseFor = int.tryParse(_pauseForController.text);
-    final listenFor = int.tryParse(_listenForController.text);
     final options = SpeechListenOptions(
         onDevice: _onDevice,
         listenMode: ListenMode.confirmation,
@@ -125,14 +107,10 @@ class _SecondPage extends State<SecondPage> {
         partialResults: true,
         autoPunctuation: true,
         enableHapticFeedback: true);
-    // Note that `listenFor` is the maximum, not the minimum, on some
-    // systems recognition will be stopped before this value is reached.
-    // Similarly `pauseFor` is a maximum not a minimum and may be ignored
-    // on some devices.
     speech.listen(
       onResult: resultListener,
-      listenFor: Duration(seconds: listenFor ?? 30),
-      pauseFor: Duration(seconds: pauseFor ?? 3),
+      listenFor: Duration(seconds: 3),  // 固定
+      pauseFor: Duration(seconds: 3),  // 固定
       localeId: _currentLocaleId,
       onSoundLevelChange: soundLevelListener,
       listenOptions: options,
@@ -295,25 +273,15 @@ class InitSpeechWidget extends StatelessWidget {
 
 class SessionOptionsWidget extends StatelessWidget {
   const SessionOptionsWidget(
-      this.currentLocaleId,
-      this.switchLang,
-      this.localeNames,
       this.logEvents,
       this.switchLogging,
-      this.pauseForController,
-      this.listenForController,
       this.onDevice,
       this.switchOnDevice,
       {Key? key})
       : super(key: key);
 
-  final String currentLocaleId;
-  final void Function(String?) switchLang;
   final void Function(bool?) switchLogging;
   final void Function(bool?) switchOnDevice;
-  final TextEditingController pauseForController;
-  final TextEditingController listenForController;
-  final List<LocaleName> localeNames;
   final bool logEvents;
   final bool onDevice;
 
@@ -324,43 +292,6 @@ class SessionOptionsWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: [
-              const Text('Language: '),
-              DropdownButton<String>(
-                onChanged: (selectedVal) => switchLang(selectedVal),
-                value: currentLocaleId,
-                items: localeNames
-                    .map(
-                      (localeName) => DropdownMenuItem(
-                        value: localeName.localeId,
-                        child: Text(localeName.name),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text('pauseFor: '),
-              Container(
-                  padding: const EdgeInsets.only(left: 8),
-                  width: 80,
-                  child: TextFormField(
-                    controller: pauseForController,
-                  )),
-              Container(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: const Text('listenFor: ')),
-              Container(
-                  padding: const EdgeInsets.only(left: 8),
-                  width: 80,
-                  child: TextFormField(
-                    controller: listenForController,
-                  )),
-            ],
-          ),
           Row(
             children: [
               const Text('On device: '),
