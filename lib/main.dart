@@ -50,10 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20),  // 空白の代わり
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage(level: selectedLevel)));
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage(selectedDifficulty: selectedLevel)));
               },
               child: const Text("Go to Second Page"),
             ),
