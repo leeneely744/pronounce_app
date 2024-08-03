@@ -69,7 +69,6 @@ class _SecondPage extends State<SecondPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const HeaderWidget(),
             Column(
               children: [
                 InitSpeechWidget(_hasSpeech, initSpeechState),  // SpeechToText 初期化ボタン
@@ -195,22 +194,6 @@ class _SecondPage extends State<SecondPage> {
     });
   }
   
-}
-
-class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Speech available',
-        style: TextStyle(fontSize: 22.0),
-      ),
-    );
-  }
 }
 
 /// Controls to start and stop speech recognition
