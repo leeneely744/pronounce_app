@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class SecondPage extends StatelessWidget {
+  final int level;
+
+  SecondPage({required this.level});
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -8,8 +12,8 @@ class SecondPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "次のページ",
+            Text(
+              "レベル${this.level}です",
               style: TextStyle(fontSize: 40),
             ),
             TextButton(

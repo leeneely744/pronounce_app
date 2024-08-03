@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Center(child: ElevatedButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => SecondPage(level: 2)));
         },
         child: const Text("Go to Second Page"),
       ),
