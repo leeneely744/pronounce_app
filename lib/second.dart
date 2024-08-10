@@ -19,8 +19,12 @@ class _SecondPage extends State<SecondPage> {
     final SpeechToText speech = SpeechToText();
 
     bool _hasSpeech = false;
-    bool _logEvents = false;
-    bool _onDevice = false;
+    bool _logEvents = true;
+    // onDevice=trueの場合、リッスンセッションはデバイス認識のみを使用する。
+    // これができない場合、試聴は失敗する。
+    // これは通常、プライバシーやセキュリティが懸念される機密性の高いコンテンツにのみ必要です。
+    // falseの場合、リスンセッションはオンデバイス認識とネットワーク認識の両方を使用する。
+    bool _onDevice = true;
     double level = 0.0;
     double minSoundLevel = 50000;
     double maxSoundLevel = -50000;
@@ -69,6 +73,7 @@ class _SecondPage extends State<SecondPage> {
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                        Text('word: $lastWords'),
                         Column(
                             children: [
                                 InitSpeechWidget(_hasSpeech, initSpeechState),    // SpeechToText 初期化ボタン
@@ -93,8 +98,7 @@ class _SecondPage extends State<SecondPage> {
         );
     }
 
-    // This is called each time the users wants to start a new speech
-    // recognition session
+    // 'Start' ボタンを押したときの処理
     void startListening() {
         _logEvent('start listening');
         lastWords = '';
@@ -125,11 +129,18 @@ class _SecondPage extends State<SecondPage> {
         });
     }
 
-    /// This callback is invoked each time new recognition results are
-    /// available after `listen` is called.
+    void cancelListening() {
+        _logEvent('cancel');
+        speech.cancel();
+        setState(() {
+            level = 0.0;
+        });
+    }
+
+    /// このコールバックは `listen` が呼ばれた後、新しい認識結果が得られるたびに呼び出される。
     void resultListener(SpeechRecognitionResult result) {
-        _logEvent(
-                'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
+        _logEvent('Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
+        debugPrint("This is in resultListener");
         setState(() {
             lastWords = '${result.recognizedWords} - ${result.finalResult}';
         });
@@ -141,14 +152,6 @@ class _SecondPage extends State<SecondPage> {
         // _logEvent('sound level $level: $minSoundLevel - $maxSoundLevel ');
         setState(() {
             this.level = level;
-        });
-    }
-
-    void cancelListening() {
-        _logEvent('cancel');
-        speech.cancel();
-        setState(() {
-            level = 0.0;
         });
     }
 
@@ -175,13 +178,6 @@ class _SecondPage extends State<SecondPage> {
         });
     }
 
-    void _switchLang(selectedVal) {
-        setState(() {
-            _currentLocaleId = selectedVal;
-        });
-        debugPrint(selectedVal);
-    }
-
     void _switchLogging(bool? val) {
         setState(() {
             _logEvents = val ?? false;
@@ -196,12 +192,16 @@ class _SecondPage extends State<SecondPage> {
     
 }
 
-/// Controls to start and stop speech recognition
+/// 'Start', 'Stop', 'Cancel' ボタン
 class SpeechControlWidget extends StatelessWidget {
-    const SpeechControlWidget(this.hasSpeech, this.isListening,
-            this.startListening, this.stopListening, this.cancelListening,
-            {Key? key})
-            : super(key: key);
+    const SpeechControlWidget(
+        this.hasSpeech,
+        this.isListening,
+        this.startListening,
+        this.stopListening,
+        this.cancelListening,
+        {Key? key}
+    ): super(key: key);
 
     final bool hasSpeech;
     final bool isListening;
