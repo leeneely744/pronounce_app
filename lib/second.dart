@@ -140,7 +140,6 @@ class _SecondPage extends State<SecondPage> {
     /// このコールバックは `listen` が呼ばれた後、新しい認識結果が得られるたびに呼び出される。
     void resultListener(SpeechRecognitionResult result) {
         _logEvent('Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
-        debugPrint("This is in resultListener");
         setState(() {
             lastWords = '${result.recognizedWords} - ${result.finalResult}';
         });
@@ -163,16 +162,14 @@ class _SecondPage extends State<SecondPage> {
     }
 
     void errorListener(SpeechRecognitionError error) {
-        _logEvent(
-                'Received error status: $error, listening: ${speech.isListening}');
+        _logEvent('Received error status: $error, listening: ${speech.isListening}');
         setState(() {
             lastError = '${error.errorMsg} - ${error.permanent}';
         });
     }
 
     void statusListener(String status) {
-        _logEvent(
-                'Received listener status: $status, listening: ${speech.isListening}');
+        _logEvent('Received listener status: $status, listening: ${speech.isListening}');
         setState(() {
             lastStatus = status;
         });
